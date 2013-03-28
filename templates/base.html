@@ -10,7 +10,15 @@
     </head>
     <body>
     	<h1>Drupal MVC</h1>
+    	<ul>
+    		{% for link in main_menu %}
+    			<li>
+    				<a href="{{ url(link.href) }}">{{ link.title }}</a>
+    			</li>
+    		{% endfor %}
+    	</ul>
     	<hr>
+
     	{% block content %}{% endblock %}
     </body>
 </html>

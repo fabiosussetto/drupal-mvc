@@ -8,14 +8,9 @@ function mvc_node_view($node, $view_mode, $langcode) {
   if (empty($node->field_slug)) {
     return;
   }
-  //die(var_dump($wrapper->getPropertyInfo()));
-  //die(var_dump($wrapper->body->value));
-  //die(var_dump($wrapper->field_slug->value()));
-  $c = new MvcController();
-  //die(var_dump($controller));
+  $c = new BaseNodeController();
   $c->dispatch($wrapper);
 }
-
 
 class MvcController {
 
@@ -26,43 +21,61 @@ class MvcController {
     $this->_twig = new Twig_Environment($loader, array(
         //'cache' => '/Users/fabio/Code/drupal-mvc/twig_cache',
     ));
+    $function = new Twig_SimpleFunction('url', function ($path = NULL, array $options = array()) {
+      return url($path, $options);
+    });
+    $this->_twig->addFunction($function);
   }
 
   public function dispatch($node) {
-    $slug = $node->field_slug->value();
-    $output = call_user_func_array(array($this, 'node_' . $slug), array($node));
+    $method = 'node_' . $node->field_slug->value();
+    if (!method_exists($this, $method)) {
+      return;
+    }
+    $output = call_user_func_array(array($this, $method), array($node));
     echo $output;
     exit();
   }
 
-  public function node_about_us($node) {
-    $context = array(
-      'name' => 'Fabio',
-      'node' => $node
-    );
-    $view = views_get_view('events');
-    $view->set_display('last_events');
-    $view->execute();
-    $results = $view->result;
-    // $res = array();
-    // foreach ($response as $obj) {
-    //   $t = entity_metadata_wrapper('entity', $obj);
-    //   die(var_dump($t));
-    // }
-    $context = array(
-      'name' => 'Fabio',
-      'node' => $node,
-      'events' => $results
-    );
-    //die('<pre>'.var_dump($results[0]).'</pre>');
-    //die('<pre>'.var_dump($results[0]->field_title).'</pre>');
-    return $this->render('index.html', $context);
+  public function beforeRender(array $context) {
+    return $context;
   }
 
   public function render($template, $context = array()) {
+    $context = $this->beforeRender($context);
     return $this->_twig->render($template, $context);
   }
 
+}
 
+
+class BaseNodeController extends MvcController {
+
+  public function beforeRender(array $context) {
+    $context = parent::beforeRender($context);
+    $context['main_menu'] = menu_navigation_links('main-menu');
+    return $context;
+  }
+
+  public function node_about_us($node) {
+    $view = views_get_view('events');
+    $view->set_display('last_events');
+    $view->execute();
+    $events = $view->result;
+    
+    $context = array(
+      'name' => 'Fabio',
+      'node' => $node,
+      'events' => $events
+    );
+    return $this->render('index.html', $context);
+  }
+
+  public function node_contacts($node) {
+    $context = array(
+      'node' => $node,
+    );
+    return $this->render('contacts.html', $context);
+  }
 
 }
