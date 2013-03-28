@@ -1,0 +1,68 @@
+<?php
+
+require_once 'Twig/Autoloader.php';
+Twig_Autoloader::register();
+
+function mvc_node_view($node, $view_mode, $langcode) {
+  $wrapper = entity_metadata_wrapper('node', $node);
+  if (empty($node->field_slug)) {
+    return;
+  }
+  //die(var_dump($wrapper->getPropertyInfo()));
+  //die(var_dump($wrapper->body->value));
+  //die(var_dump($wrapper->field_slug->value()));
+  $c = new MvcController();
+  //die(var_dump($controller));
+  $c->dispatch($wrapper);
+}
+
+
+class MvcController {
+
+  protected $_twig;
+
+  public function __construct() {
+    $loader = new Twig_Loader_Filesystem('/Users/fabio/Code/drupal-mvc/templates');
+    $this->_twig = new Twig_Environment($loader, array(
+        //'cache' => '/Users/fabio/Code/drupal-mvc/twig_cache',
+    ));
+  }
+
+  public function dispatch($node) {
+    $slug = $node->field_slug->value();
+    $output = call_user_func_array(array($this, 'node_' . $slug), array($node));
+    echo $output;
+    exit();
+  }
+
+  public function node_about_us($node) {
+    $context = array(
+      'name' => 'Fabio',
+      'node' => $node
+    );
+    $view = views_get_view('events');
+    $view->set_display('last_events');
+    $view->execute();
+    $results = $view->result;
+    // $res = array();
+    // foreach ($response as $obj) {
+    //   $t = entity_metadata_wrapper('entity', $obj);
+    //   die(var_dump($t));
+    // }
+    $context = array(
+      'name' => 'Fabio',
+      'node' => $node,
+      'events' => $results
+    );
+    //die('<pre>'.var_dump($results[0]).'</pre>');
+    //die('<pre>'.var_dump($results[0]->field_title).'</pre>');
+    return $this->render('index.html', $context);
+  }
+
+  public function render($template, $context = array()) {
+    return $this->_twig->render($template, $context);
+  }
+
+
+
+}

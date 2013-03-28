@@ -1,0 +1,6 @@
+name = MVC
+description = MVC Mini Framework
+package = Core
+version = VERSION
+core = 7.x
+

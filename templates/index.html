@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<p>
+	This is the main content.
+	Name = {{ name }}
+</p>
+
+<h3>Article content</h3>
+
+<p>
+	{{ node.body.value.value }}
+</p>
+
+<h3>Last events</h3>
+
+<ul>
+	{% for event in events %}
+		<li>
+			<strong>{{ event.node_title }}</strong>:
+			{{ event.field_body.0.raw.value }}
+		</li>
+	{% endfor %}
+</ul>
+
+{% endblock %}
