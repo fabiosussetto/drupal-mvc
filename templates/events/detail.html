@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Event detail page</h3>
+
+{{ node.body.value.value|raw }}
+
+<h4>Location</h4>
+{{ node.field_location.value }}
+
+{% endblock %}

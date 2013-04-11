@@ -4,13 +4,51 @@ require_once 'Twig/Autoloader.php';
 Twig_Autoloader::register();
 
 function mvc_node_view($node, $view_mode, $langcode) {
-  $wrapper = entity_metadata_wrapper('node', $node);
-  if (empty($node->field_slug)) {
-    return;
-  }
-  $c = new BaseNodeController();
-  $c->dispatch($wrapper);
+  $wrapper = entity_metadata_wrapper('event', $node);
+  MVCRouter::dispatch($node, $wrapper);
+  // print_r($node->type);
+  // print_r($wrapper->field_location->value());
+  //die();
+  // $wrapper = entity_metadata_wrapper('node', $node);
+  // dprint_r($wrapper);
+  // die();
+  // if (empty($node->field_slug)) {
+  //   return;
+  // }
+  // $c = new BaseNodeController();
+  // $c->dispatch($wrapper);
 }
+
+
+class Dispatcher {
+
+  public function dispatch($node) {
+
+  }
+
+}
+
+class MVCRouter {
+
+  protected static $_routes = array(
+    'node' => array(
+      'event' => 'EventController'
+    )
+  );
+
+  public static function dispatch($node, $wrapper) {
+    $content_type = $node->type;    
+    if (isset(self::$_routes['node'][$content_type])) {      
+      $controller_class = self::$_routes['node'][$content_type];
+      $controller = new $controller_class;
+      $output = $controller->get($node, $wrapper);
+      echo $output;
+      exit();
+    }
+  }
+
+}
+
 
 class MvcController {
 
@@ -78,4 +116,20 @@ class BaseNodeController extends MvcController {
     return $this->render('contacts.html', $context);
   }
 
+}
+
+class EventController extends MvcController {
+
+  // public function dispatch($node) {
+  //   $output = $this->view($node);
+  //   echo $output;
+  //   exit();
+  // }
+
+  public function get($node, $wrapper) {
+    $context = array(
+      'node' => $wrapper,
+    );
+    return $this->render('events/detail.html', $context);
+  }
 }

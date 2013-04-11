@@ -7535,6 +7535,8 @@ function entity_get_info($entity_type = NULL) {
     $drupal_static_fast['entity_info'] = &drupal_static(__FUNCTION__);
   }
   $entity_info = &$drupal_static_fast['entity_info'];
+  //echo $type . '<br>';
+  //echo '<pre>'.print_r(entity_get_info(), true).'</pre>';
 
   // hook_entity_info() includes translated strings, so each language is cached
   // separately.

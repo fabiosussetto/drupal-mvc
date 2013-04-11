@@ -1,0 +1,53 @@
+<?php
+/**
+ * @file
+ * Code for the Events feature.
+ */
+
+include_once 'events.features.inc';
+
+// function events_entity_info_alter(&$entity_info) {
+//   //dprint_r($entity_info);
+//   //die();
+//   $entity_info['event'] = array(
+// 	'name' => 'Event',
+// 	'base' => 'node_content',
+// 	'description' => '',
+// 	'has_title' => '1',
+// 	'title_label' => 'Title',
+// 	'help' => '',
+// 	);
+// }
+
+function events_entity_info() {
+  //dprint_r($entity_info);
+  //die();
+  return array(
+  	'event' => array(
+  		'label' => 'Event',
+		'name' => 'Event',
+		'base' => 'node_content',
+		'description' => '',
+		'has_title' => '1',
+		'title_label' => 'Title',
+		'help' => '',
+	));
+}
+
+function events_entity_property_info_alter(&$info) {
+  
+  //$properties = &$info['node']['bundles']['event']['properties'];
+  $info['event'] = array('properties' => $info['node']['bundles']['event']['properties']);
+  dprint_r($info);
+  //die('AAZZ');
+ //  return array(
+ //  	'event' => array(
+ //  		'label' => 'Event',
+	// 	'name' => 'Event',
+	// 	'base' => 'node_content',
+	// 	'description' => '',
+	// 	'has_title' => '1',
+	// 	'title_label' => 'Title',
+	// 	'help' => '',
+	// ));
+}
